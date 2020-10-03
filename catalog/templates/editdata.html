@@ -8,7 +8,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <html lang="en">
 
 <head>
-	<title>毛毛的</title>
+	<title>家教網</title>
 	<!-- Meta-Tags -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="utf-8">
@@ -38,37 +38,27 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	<h1 style="font-family:fantasy">Edit</h1>
 	<div class="w3ls-login box box--big">
 		<!-- form starts here -->
-		<form action="editdata.php" method="post">
+		<form action="" method="post"> {% csrf_token %}
 			<div class="agile-field-txt">
 				<label>
-					<i class="fa fa-user" ></i> Personalized Signatures </label>
-				<input type="text" name="ps" required="" />
-			</div>
+					<i class="fa fa-user" aria-hidden="true"></i> Name </label>
+				<input type="text" name="name" placeholder="Enter your name " required="" value="{{ user_name }}"/>
+            </div>
 			<div class="agile-field-txt">
 				<label>
-					<i class="fa fa-key" ></i> Gender[0:girl,1:boy] </label>
-				<input type="text" name="gender" required="" />
-			</div>
-			<div class="agile-field-txt">
-				<label>
-					<i class="fa fa-key" ></i> Pet Type </label>
-				<input type="text" name="pettype" required="" />
-			</div>
-			<div class="agile-field-txt">
-				<label>
-					<i class="fa fa-key" ></i> Birthday </label>
-				<input type="text" name="birth" required="" />
-			</div>
-			<div class="agile-field-txt">
-				<label>
-					<i class="fa fa-key" ></i> Age </label>
-				<input type="text" name="age" required="" />
-			</div>
-			<div class="agile-field-txt">
-				<label>
-					<i class="fa fa-key" aria-hidden="true"></i> About Me </label>
-				<input type="text" name="informatiom" required="" />
-			</div>
+					<i class="fa fa-user" aria-hidden="true"></i> Status </label>
+				<input type="text" name="status" placeholder="Enter your name " required="" value="{{ user_status }}" readonly>
+            </div>
+            <div class="agile-field-txt">
+                <label>
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>Email</label>
+                <input type="email" name="email" placeholder=" Enter your email " required="" value="{{ user_email }}"/>
+            </div>
+            <div class="agile-field-txt">
+                <label>
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>Card Number</label>
+                <input type="number" name="card_number" placeholder=" Enter your card number " required="" value="{{ user_card_number }}"/>
+            </div>
 			<div class="w3ls-bot">
 				<div class="form-end">
 					<input type="submit" value="SAVE CHANGE">
@@ -85,6 +75,13 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		</p>
 	</div>
 	<!--//copyright-->
+	{% if messages %}
+		<script>
+			{% for msg in messages %}
+				alert('{{ msg.message }}');
+			{% endfor %}
+		</script>
+	{% endif %}
 </body>
 
 </html>

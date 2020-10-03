@@ -1,10 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from .models import User, Class #Book, Author, BookInstance, Genre, 
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib import auth
-from django.contrib.auth.hashers import make_password,check_password
+from .models import User, Class #Book, Author, BookInstance, Genre,
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
@@ -45,12 +42,16 @@ def login(request):
         if User.objects.filter(name=name).exists():
             user = User.objects.get(name=name)
             if password == user.password:#check_password(password, user.password):
-                user.save() #儲存
-                context = {
-                    'user': user
-                }
-                #return render(request, 'index.html',context)
-                return HttpResponseRedirect('../homepage/')
+                response = HttpResponseRedirect('../homepage/')
+                response.set_cookie("user_id", user.user_id)
+                response.set_cookie("user_name", user.name)
+                response.set_cookie("user_email", user.email)
+                if user.status == 1:
+                    response.set_cookie("user_status", "Teacher")
+                else:
+                    response.set_cookie("user_status", "Student")
+                response.set_cookie("user_card_number", user.card_number)
+                return response
         messages.error(request, '使用者帳號或密碼錯誤')
         return HttpResponseRedirect(reverse('login'))       
         return render(request, 'login.html')
@@ -67,6 +68,7 @@ def register(request):
         c_password = request.POST.get('CPassword')
         if password == c_password:
             User.objects.create(name = name, password = password, email = email, status = status, card_number = card_number)
+            messages.success(request, '註冊成功！')
             return HttpResponseRedirect('../login/')
         else:
             messages.error(request, '請重新輸入密碼')
@@ -79,3 +81,79 @@ def register(request):
     }
     '''
     return render(request, 'register.html')
+
+def homepage(request):
+    if request.COOKIES != None: 
+        try:
+            user_name = request.COOKIES['user_name']
+        except:
+            return HttpResponse('No user name.') 
+    context = {
+        'user_name': user_name
+    }
+    return render(request, 'homepage.html', context)
+
+def editdata(request):
+    if request.method == 'GET':
+        if request.COOKIES != None: 
+            try:
+                context = {
+                    'user_name': request.COOKIES['user_name'],
+                    'user_email': request.COOKIES['user_email'],
+                    'user_status': request.COOKIES['user_status'],
+                    'user_card_number': request.COOKIES['user_card_number'],
+                }
+            except:
+                return HttpResponse('User undifined.') 
+        return render(request, 'editdata.html', context)
+    elif request.method == 'POST':
+        user_id = request.COOKIES['user_id']
+        if User.objects.filter(user_id = user_id).exists():
+            user = User.objects.get(user_id = user_id)
+            user.name = request.POST.get('name')
+            user.email = request.POST.get('email')
+            user.card_number = request.POST.get('card_number')
+            user.save()
+            messages.success(request, '資料修改成功')
+            response = HttpResponseRedirect('../homepage/')
+            response.set_cookie("user_name", user.name)
+            response.set_cookie("user_email", user.email)
+            response.set_cookie("user_card_number", user.card_number)
+            return response
+        else:
+            messages.error(request, '資料修改失敗')
+            return HttpResponseRedirect(reverse('editdata'))
+
+def changepw(request):
+    if request.method == 'GET':
+        return render(request, 'changepw.html')
+        '''
+        if request.method == 'GET':
+            if request.COOKIES != None: 
+                try:
+                    context = {
+                        'user_id': request.COOKIES['user_id'],
+                    }
+                except:
+                    return HttpResponse('User undifined.') 
+            return render(request, 'changepw.html', context)
+        '''
+    elif request.method == 'POST':
+        password = request.POST.get('pw')
+        newpw = request.POST.get('newpw')
+        confirmpw = request.POST.get('confirmpw')
+        if password == newpw or newpw != confirmpw:
+            messages.error(request, '請重新輸入密碼')
+            return HttpResponseRedirect(reverse('changepw'))
+        user_id = request.COOKIES['user_id']
+        if User.objects.filter(user_id = user_id).exists():
+            user = User.objects.get(user_id = user_id)
+            if password == user.password:
+                user.password = newpw
+                user.save() #儲存
+                messages.success(request, '密碼修改成功，請重新登錄！')
+                response = HttpResponseRedirect('../login/')
+                return response
+            else:
+                messages.error(request, '請重新輸入密碼')
+                return HttpResponseRedirect(reverse('changepw'))

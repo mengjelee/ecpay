@@ -32,6 +32,7 @@ urlpatterns += [
     path('', RedirectView.as_view(url='/catalog/')),
     path('register/', RedirectView.as_view(url='/catalog/register/')),
     path('login/', RedirectView.as_view(url='/catalog/login/')),
+    path('homepage/', RedirectView.as_view(url='/catalog/homepage/')),
 ]
 # Use static() to add url mapping to serve static files during development (only)
 from django.conf import settings

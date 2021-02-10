@@ -77,9 +77,9 @@ WSGI_APPLICATION = 'login.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'letsmeet',
-        'USER': 'postgres',
-        'PASSWORD': 'mjbbo4i7',
+        'NAME': 'dckmfr1ltpvd8t',
+        'USER': 'jxehlnnxafoxri',
+        'PASSWORD': 'd5dc7c252181d08fd5fdb4defff4def71762ebce59064145575dc8a6eff67376',
         'HOST': 'localhost',
         'PORT': '5432',
     }
